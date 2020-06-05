@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis
+  annotations: {}
+spec:
+  containers:
+  - name: redis
+    image: k8s.gcr.io/redis:e2e
+    env:
+    - name: MASTER
+      value: "true"
+    ports:
+    - containerPort: 6379
+    resources:
+      limits:
+        cpu: 100m
+    volumeMounts:
+    - mountPath: /redis-master-data
+      name: data
+    - mountPath: /redis-master
+      name: config
+  volumes:
+  - name: data
+    emptyDir: {}
+  - name: config
+    configMap:
+      name: redis-config
+      items:
+      - key: redis-config
+        path: redis.conf
