@@ -14,23 +14,12 @@ import (
 var cfgFile string
 var name string
 
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "kubevol",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	Short: "Get information on your pods volumes",
+	Long:  `Find all the pods that have volumes attached and which volumes are attached with the ability to filter by specific type and name.`,
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -39,21 +28,12 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.kubevol.yaml)")
 	rootCmd.PersistentFlags().StringVar(&name, "name", "", "Name of the object you wish to filter by")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	initConfig()
 
 	factory := core.NewDepsFactory()
-	coreClient, err := factory.CoreClient()
+	coreClient, err := factory.CoreClient(viper.GetString("kubeconfig"))
 
 	if err != nil {
 		panic(err.Error())

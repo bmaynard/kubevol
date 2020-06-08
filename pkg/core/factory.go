@@ -16,8 +16,12 @@ func NewDepsFactory() *Factory {
 	return &Factory{}
 }
 
-func (f *Factory) CoreClient() (kubernetes.Interface, error) {
-	kubeconfig := filepath.Join(homeDir(), ".kube", "config")
+func (f *Factory) CoreClient(kubeconfig string) (kubernetes.Interface, error) {
+
+	if kubeconfig == "" {
+		kubeconfig = filepath.Join(homeDir(), ".kube", "config")
+	}
+
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 
 	if err != nil {
