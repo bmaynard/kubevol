@@ -12,4 +12,4 @@ jobs:
         goarch: ["386", amd64]
     steps:
       - uses: actions/checkout@v2
-      - name: ./.github/actions/build-binary
+      - uses: ./.github/actions/build-binary
