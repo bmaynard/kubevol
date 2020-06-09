@@ -44,22 +44,10 @@ func (o KubeData) GetPod(podName string, namespace string) (*v1.Pod, error) {
 	return pod, nil
 }
 
-func (o KubeData) GetConfigMap(configMapName string, namespace string) *v1.ConfigMap {
-	configMap, err := o.coreClient.CoreV1().ConfigMaps(namespace).Get(configMapName, metav1.GetOptions{})
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return configMap
+func (o KubeData) GetConfigMap(configMapName string, namespace string) (*v1.ConfigMap, error) {
+	return o.coreClient.CoreV1().ConfigMaps(namespace).Get(configMapName, metav1.GetOptions{})
 }
 
-func (o KubeData) GetSecret(secretName string, namespace string) *v1.Secret {
-	secret, err := o.coreClient.CoreV1().Secrets(namespace).Get(secretName, metav1.GetOptions{})
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return secret
+func (o KubeData) GetSecret(secretName string, namespace string) (*v1.Secret, error) {
+	return o.coreClient.CoreV1().Secrets(namespace).Get(secretName, metav1.GetOptions{})
 }

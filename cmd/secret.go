@@ -40,10 +40,10 @@ func NewSecretCommand(k core.KubeData) *cobra.Command {
 				for _, volume := range pod.Spec.Volumes {
 					if volume.Secret != nil {
 						if objectName == "" || (volume.Secret != nil && volume.Secret.SecretName == objectName) {
-							configMap := k.GetSecret(volume.Secret.SecretName, namespace)
+							secret, err := k.GetSecret(volume.Secret.SecretName, namespace)
 							outOfDate := color.YellowString("Unknown")
 
-							if configMap.ObjectMeta.CreationTimestamp.Time.After(podCreationTime) {
+							if err != nil || secret.ObjectMeta.CreationTimestamp.Time.After(podCreationTime) {
 								outOfDate = color.RedString("Yes")
 							}
 

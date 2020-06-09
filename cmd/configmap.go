@@ -40,10 +40,10 @@ func NewConfigMapCommand(k core.KubeData) *cobra.Command {
 				for _, volume := range pod.Spec.Volumes {
 					if volume.ConfigMap != nil {
 						if objectName == "" || (volume.ConfigMap != nil && volume.ConfigMap.LocalObjectReference.Name == objectName) {
-							configMap := k.GetConfigMap(volume.ConfigMap.LocalObjectReference.Name, namespace)
+							configMap, err := k.GetConfigMap(volume.ConfigMap.LocalObjectReference.Name, namespace)
 							outOfDate := color.YellowString("Unknown")
 
-							if configMap.ObjectMeta.CreationTimestamp.Time.After(podCreationTime) {
+							if err != nil || configMap.ObjectMeta.CreationTimestamp.Time.After(podCreationTime) {
 								outOfDate = color.RedString("Yes")
 							}
 
