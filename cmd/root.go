@@ -12,7 +12,8 @@ import (
 )
 
 var cfgFile string
-var name string
+var objectName string
+var namespace string
 
 func NewKubevolApp() *cobra.Command {
 	var rootCmd = &cobra.Command{
@@ -22,7 +23,8 @@ func NewKubevolApp() *cobra.Command {
 	}
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.kubevol.yaml)")
-	rootCmd.PersistentFlags().StringVar(&name, "name", "", "Name of the object you wish to filter by")
+	rootCmd.PersistentFlags().StringVar(&namespace, "namespace", "", "Name of the namespace you wish to filter by")
+	rootCmd.PersistentFlags().StringVar(&objectName, "object", "", "Name of the object you wish to filter by")
 	initConfig()
 
 	factory := core.NewDepsFactory()
@@ -32,7 +34,7 @@ func NewKubevolApp() *cobra.Command {
 		panic(err.Error())
 	}
 
-	kubeData := core.NewKubeData("", coreClient)
+	kubeData := core.NewKubeData(coreClient)
 
 	rootCmd.AddCommand(NewConfigMapCommand(*kubeData))
 	rootCmd.AddCommand(NewSecretCommand(*kubeData))

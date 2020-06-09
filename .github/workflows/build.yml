@@ -38,3 +38,7 @@ jobs:
           kubectl get pods -n kube-system
           echo "current-context:" $(kubectl config current-context)
           echo "environment-kubeconfig:" ${KUBECONFIG}
+          ./tests/prep-cluster.sh
+
+      - name: Run Tests
+        run: go test -v ./tests

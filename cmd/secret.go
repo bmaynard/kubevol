@@ -15,13 +15,13 @@ func NewSecretCommand(k core.KubeData) *cobra.Command {
 		Use:   "secret",
 		Short: "Find all pods that have a specific Secret attached",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pods := k.GetPods()
+			pods := k.GetPods(namespace)
 			fmt.Fprintf(cmd.OutOrStdout(), color.GreenString("There are %d pods in the cluster\n", len(pods.Items)))
 
-			if name == "" {
+			if objectName == "" {
 				fmt.Fprintf(cmd.OutOrStdout(), color.GreenString("Searching for pods that have a Secret attached\n\n"))
 			} else {
-				fmt.Fprintf(cmd.OutOrStdout(), color.GreenString("Searching for pods that have \"%s\" Secret attached\n\n", name))
+				fmt.Fprintf(cmd.OutOrStdout(), color.GreenString("Searching for pods that have \"%s\" Secret attached\n\n", objectName))
 			}
 
 			ui := core.SetupTable(table.Row{"Namespace", "Pod Name", "Secret Name", "Volume Name", "Out of Date"}, cmd.OutOrStdout())
@@ -39,7 +39,7 @@ func NewSecretCommand(k core.KubeData) *cobra.Command {
 
 				for _, volume := range pod.Spec.Volumes {
 					if volume.Secret != nil {
-						if name == "" || (volume.Secret != nil && volume.Secret.SecretName == name) {
+						if objectName == "" || (volume.Secret != nil && volume.Secret.SecretName == objectName) {
 							configMap := k.GetSecret(volume.Secret.SecretName, namespace)
 							outOfDate := color.YellowString("Unknown")
 

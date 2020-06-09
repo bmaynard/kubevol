@@ -11,17 +11,16 @@ import (
 )
 
 type KubeData struct {
-	nsName     string
 	coreClient kubernetes.Interface
 }
 
-func NewKubeData(nsName string, coreClient kubernetes.Interface) *KubeData {
+func NewKubeData(coreClient kubernetes.Interface) *KubeData {
 
-	return &KubeData{nsName, coreClient}
+	return &KubeData{coreClient}
 }
 
-func (o KubeData) GetPods() *v1.PodList {
-	pods, err := o.coreClient.CoreV1().Pods(o.nsName).List(metav1.ListOptions{})
+func (o KubeData) GetPods(namespace string) *v1.PodList {
+	pods, err := o.coreClient.CoreV1().Pods(namespace).List(metav1.ListOptions{})
 
 	if err != nil {
 		panic(err.Error())

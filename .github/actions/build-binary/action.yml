@@ -1,5 +1,0 @@
-name: 'Build Binary'
-runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  

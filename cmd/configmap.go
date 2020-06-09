@@ -15,13 +15,13 @@ func NewConfigMapCommand(k core.KubeData) *cobra.Command {
 		Use:   "configmap",
 		Short: "Find all pods that have a specific ConfigMap attached",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pods := k.GetPods()
+			pods := k.GetPods(namespace)
 			fmt.Fprintf(cmd.OutOrStdout(), color.GreenString("There are %d pods in the cluster\n", len(pods.Items)))
 
-			if name == "" {
+			if objectName == "" {
 				fmt.Fprintf(cmd.OutOrStdout(), color.GreenString("Searching for pods that have a ConfigMap attached\n\n"))
 			} else {
-				fmt.Fprintf(cmd.OutOrStdout(), color.GreenString("Searching for pods that have \"%s\" ConfigMap attached\n\n", name))
+				fmt.Fprintf(cmd.OutOrStdout(), color.GreenString("Searching for pods that have \"%s\" ConfigMap attached\n\n", objectName))
 			}
 
 			ui := core.SetupTable(table.Row{"Namespace", "Pod Name", "ConfigMap Name", "Volume Name", "Out of Date"}, cmd.OutOrStdout())
@@ -39,7 +39,7 @@ func NewConfigMapCommand(k core.KubeData) *cobra.Command {
 
 				for _, volume := range pod.Spec.Volumes {
 					if volume.ConfigMap != nil {
-						if name == "" || (volume.ConfigMap != nil && volume.ConfigMap.LocalObjectReference.Name == name) {
+						if objectName == "" || (volume.ConfigMap != nil && volume.ConfigMap.LocalObjectReference.Name == objectName) {
 							configMap := k.GetConfigMap(volume.ConfigMap.LocalObjectReference.Name, namespace)
 							outOfDate := color.YellowString("Unknown")
 
