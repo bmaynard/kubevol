@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/bmaynard/kubevol/pkg/core"
 	"github.com/fatih/color"
@@ -15,19 +14,17 @@ func NewConfigMapCommand(k core.KubeData) *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "configmap",
 		Short: "Find all pods that have a specific ConfigMap attached",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			pods := k.GetPods()
-			fmt.Printf(color.GreenString("There are %d pods in the cluster\n", len(pods.Items)))
+			fmt.Fprintf(cmd.OutOrStdout(), color.GreenString("There are %d pods in the cluster\n", len(pods.Items)))
 
 			if name == "" {
-				fmt.Printf(color.GreenString("Searching for pods that have a ConfigMap attached\n\n"))
+				fmt.Fprintf(cmd.OutOrStdout(), color.GreenString("Searching for pods that have a ConfigMap attached\n\n"))
 			} else {
-				fmt.Printf(color.GreenString("Searching for pods that have \"%s\" ConfigMap attached\n\n", name))
+				fmt.Fprintf(cmd.OutOrStdout(), color.GreenString("Searching for pods that have \"%s\" ConfigMap attached\n\n", name))
 			}
 
-			t := table.NewWriter()
-			t.SetOutputMirror(os.Stdout)
-			t.AppendHeader(table.Row{"Namespace", "Pod Name", "ConfigMap Name", "Volume Name", "Out of Date"})
+			ui := core.SetupTable(table.Row{"Namespace", "Pod Name", "ConfigMap Name", "Volume Name", "Out of Date"}, cmd.OutOrStdout())
 
 			for _, pod := range pods.Items {
 				podName := pod.ObjectMeta.Name
@@ -50,7 +47,7 @@ func NewConfigMapCommand(k core.KubeData) *cobra.Command {
 								outOfDate = color.RedString("Yes")
 							}
 
-							t.AppendRows([]table.Row{
+							ui.AppendRow([]table.Row{
 								{color.BlueString(namespace), podName, volume.ConfigMap.LocalObjectReference.Name, volume.Name, outOfDate},
 							})
 						}
@@ -58,7 +55,8 @@ func NewConfigMapCommand(k core.KubeData) *cobra.Command {
 				}
 			}
 
-			t.Render()
+			ui.Render()
+			return nil
 		},
 	}
 

@@ -15,8 +15,16 @@ limitations under the License.
 */
 package main
 
-import "github.com/bmaynard/kubevol/cmd"
+import (
+	"fmt"
+	"os"
+
+	"github.com/bmaynard/kubevol/cmd"
+)
 
 func main() {
-	cmd.Execute()
+	if err := cmd.NewKubevolApp().Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
