@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/bmaynard/kubevol/pkg/core"
 	"github.com/fatih/color"
@@ -15,19 +14,17 @@ func NewConfigMapCommand(k core.KubeData) *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "configmap",
 		Short: "Find all pods that have a specific ConfigMap attached",
-		Run: func(cmd *cobra.Command, args []string) {
-			pods := k.GetPods()
-			fmt.Printf(color.GreenString("There are %d pods in the cluster\n", len(pods.Items)))
+		RunE: func(cmd *cobra.Command, args []string) error {
+			pods := k.GetPods(namespace)
+			fmt.Fprintf(cmd.OutOrStdout(), color.GreenString("There are %d pods in the cluster\n", len(pods.Items)))
 
-			if name == "" {
-				fmt.Printf(color.GreenString("Searching for pods that have a ConfigMap attached\n\n"))
+			if objectName == "" {
+				fmt.Fprintf(cmd.OutOrStdout(), color.GreenString("Searching for pods that have a ConfigMap attached\n\n"))
 			} else {
-				fmt.Printf(color.GreenString("Searching for pods that have \"%s\" ConfigMap attached\n\n", name))
+				fmt.Fprintf(cmd.OutOrStdout(), color.GreenString("Searching for pods that have \"%s\" ConfigMap attached\n\n", objectName))
 			}
 
-			t := table.NewWriter()
-			t.SetOutputMirror(os.Stdout)
-			t.AppendHeader(table.Row{"Namespace", "Pod Name", "ConfigMap Name", "Volume Name", "Out of Date"})
+			ui := core.SetupTable(table.Row{"Namespace", "Pod Name", "ConfigMap Name", "Volume Name", "Out of Date"}, cmd.OutOrStdout())
 
 			for _, pod := range pods.Items {
 				podName := pod.ObjectMeta.Name
@@ -42,15 +39,15 @@ func NewConfigMapCommand(k core.KubeData) *cobra.Command {
 
 				for _, volume := range pod.Spec.Volumes {
 					if volume.ConfigMap != nil {
-						if name == "" || (volume.ConfigMap != nil && volume.ConfigMap.LocalObjectReference.Name == name) {
-							configMap := k.GetConfigMap(volume.ConfigMap.LocalObjectReference.Name, namespace)
+						if objectName == "" || (volume.ConfigMap != nil && volume.ConfigMap.LocalObjectReference.Name == objectName) {
+							configMap, err := k.GetConfigMap(volume.ConfigMap.LocalObjectReference.Name, namespace)
 							outOfDate := color.YellowString("Unknown")
 
-							if configMap.ObjectMeta.CreationTimestamp.Time.After(podCreationTime) {
+							if err != nil || configMap.ObjectMeta.CreationTimestamp.Time.After(podCreationTime) {
 								outOfDate = color.RedString("Yes")
 							}
 
-							t.AppendRows([]table.Row{
+							ui.AppendRow([]table.Row{
 								{color.BlueString(namespace), podName, volume.ConfigMap.LocalObjectReference.Name, volume.Name, outOfDate},
 							})
 						}
@@ -58,7 +55,8 @@ func NewConfigMapCommand(k core.KubeData) *cobra.Command {
 				}
 			}
 
-			t.Render()
+			ui.Render()
+			return nil
 		},
 	}
 

@@ -13,8 +13,10 @@
             "env": {},
             "args": [
                 "configmap",
-                "--name",
-                "redis-config-ver-1"
+                "--object",
+                "redis-config-ver-1",
+                "--namespace",
+                "kubevol-test-run"
             ]
         },
         {

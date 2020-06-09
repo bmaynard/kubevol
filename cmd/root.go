@@ -12,24 +12,19 @@ import (
 )
 
 var cfgFile string
-var name string
+var objectName string
+var namespace string
 
-var rootCmd = &cobra.Command{
-	Use:   "kubevol",
-	Short: "Get information on your pods volumes",
-	Long:  `Find all the pods that have volumes attached and which volumes are attached with the ability to filter by specific type and name.`,
-}
-
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+func NewKubevolApp() *cobra.Command {
+	var rootCmd = &cobra.Command{
+		Use:   "kubevol",
+		Short: "Get information on your pods volumes",
+		Long:  `Find all the pods that have volumes attached and which volumes are attached with the ability to filter by specific type and name.`,
 	}
-}
 
-func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.kubevol.yaml)")
-	rootCmd.PersistentFlags().StringVar(&name, "name", "", "Name of the object you wish to filter by")
+	rootCmd.PersistentFlags().StringVar(&namespace, "namespace", "", "Name of the namespace you wish to filter by")
+	rootCmd.PersistentFlags().StringVar(&objectName, "object", "", "Name of the object you wish to filter by")
 	initConfig()
 
 	factory := core.NewDepsFactory()
@@ -39,10 +34,12 @@ func init() {
 		panic(err.Error())
 	}
 
-	kubeData := core.NewKubeData("", coreClient)
+	kubeData := core.NewKubeData(coreClient)
 
 	rootCmd.AddCommand(NewConfigMapCommand(*kubeData))
 	rootCmd.AddCommand(NewSecretCommand(*kubeData))
+
+	return rootCmd
 }
 
 // initConfig reads in config file and ENV variables if set.
