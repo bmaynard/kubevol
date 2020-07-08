@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kubevol
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubevol-watch
+  namespace: "kubevol"
+  labels:
+    app: kubevol
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kubevol
+      app.kubernetes.io/instance: kubevol-watch
+      app.kubernetes.io/component: "controller"
+  template:
+    metadata:
+      labels:
+        app: kubevol
+        app.kubernetes.io/name: kubevol
+        app.kubernetes.io/instance: kubevol-watch
+        app.kubernetes.io/component: "controller"
+    spec:
+      containers:
+        - name: kubevol-watch
+          image: "bmaynard/kubevol-watch:v0.5.0"
+          imagePullPolicy: IfNotPresent

@@ -12,4 +12,4 @@ EXPOSE 8080
 
 RUN mkdir -p /app/mocks
 
-CMD ["/app/kubevol", "watch-configmap"]
+CMD ["/app/kubevol", "watch"]

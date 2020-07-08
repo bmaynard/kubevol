@@ -38,8 +38,7 @@ func NewKubevolApp() *cobra.Command {
 
 	rootCmd.AddCommand(NewConfigMapCommand(*kubeData))
 	rootCmd.AddCommand(NewSecretCommand(*kubeData))
-	rootCmd.AddCommand(NewWatchConfigmapCommand(*factory))
-	rootCmd.AddCommand(NewWatchSecretCommand(*factory))
+	rootCmd.AddCommand(NewWatchCommand(*factory))
 
 	return rootCmd
 }

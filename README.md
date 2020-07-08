@@ -1,25 +1,18 @@
 # kubevol
 
-This is a simple application that queries all pods for an attached volume or see all the volumes attached to each pod by specific type (eg: ConfigMap, Secret).
+This is an application to audit all your Kubernetes pods for an attached volume or see all the volumes attached to each pod by specific type (eg: ConfigMap, Secret).
 
 Features:
 
 - Query for ConfigMaps and Secrets (future support coming for other types of volumes)
+- Kubernetes controller to watch and record changes to ConfigMaps and Secrets
 - Filter by namespace
 - Filter by a specific object name
-- See if attached volume is outdated
-    - Limited support, can only detect if configmap was deleted after pod was created
+- See if attached volume has a stale version attached
 
-## Install
+## Installation
 
-Currently you need to build the binary yourself which you can accomplish with the following steps:
-
-```
-git clone git@github.com:bmaynard/kubevol.git
-cd kubevol
-go build
-./kubevol --help
-```
+You can download the latest release from [Releases](https://github.com/bmaynard/kubevol/releases).
 
 ### Configuration
 

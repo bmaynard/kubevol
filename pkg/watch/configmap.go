@@ -11,7 +11,7 @@ import (
 func (w Watch) UpateConfigMapTracker(old, new interface{}) {
 	cm := new.(*apiv1.ConfigMap)
 
-	if cm.Name == WatchConfigMapTrackerName {
+	if cm.Name == WatchConfigMapTrackerName || cm.Name == WatchSecretTrackerName {
 		return
 	}
 
@@ -60,7 +60,7 @@ func (w Watch) UpateConfigMapTracker(old, new interface{}) {
 func (w Watch) DeleteConfigMapTracker(obj interface{}) {
 	cm := obj.(*apiv1.ConfigMap)
 
-	if cm.Name == WatchConfigMapTrackerName {
+	if cm.Name == WatchConfigMapTrackerName || cm.Name == WatchSecretTrackerName {
 		return
 	}
 
@@ -82,5 +82,4 @@ func (w Watch) DeleteConfigMapTracker(obj interface{}) {
 	} else {
 		w.f.Logger.Infof("Deleted configmap: \"%s\" from tracker", cm.Name)
 	}
-
 }
