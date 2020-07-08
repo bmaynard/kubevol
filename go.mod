@@ -10,6 +10,7 @@ require (
 	github.com/jedib0t/go-pretty/v6 v6.0.3
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pkg/errors v0.8.1
+	github.com/sirupsen/logrus v1.6.0
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.0

@@ -28,16 +28,18 @@ func NewKubevolApp() *cobra.Command {
 	initConfig()
 
 	factory := core.NewDepsFactory()
-	coreClient, err := factory.CoreClient(viper.GetString("kubeconfig"))
+	coreClient, err := factory.CoreClient()
 
 	if err != nil {
-		panic(err.Error())
+		factory.Logger.Fatal(err)
 	}
 
 	kubeData := core.NewKubeData(coreClient)
 
 	rootCmd.AddCommand(NewConfigMapCommand(*kubeData))
 	rootCmd.AddCommand(NewSecretCommand(*kubeData))
+	rootCmd.AddCommand(NewWatchConfigmapCommand(*factory))
+	rootCmd.AddCommand(NewWatchSecretCommand(*factory))
 
 	return rootCmd
 }
