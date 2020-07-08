@@ -1,24 +1,27 @@
 # kubevol
 
-This is a simple application that queries all pods for an attached volume or see all the volumes attached to each pod by specific type (eg: ConfigMap, Secret).
+Kubevol allows you to audit all your Kubernetes pods for an attached volume or see all the volumes attached to each pod by a specific type (eg: ConfigMap, Secret).
 
 Features:
 
 - Query for ConfigMaps and Secrets (future support coming for other types of volumes)
+- Kubernetes controller to watch and record changes to ConfigMaps and Secrets
 - Filter by namespace
 - Filter by a specific object name
-- See if attached volume is outdated
-    - Limited support, can only detect if configmap was deleted after pod was created
+- See if attached volume has a stale version attached
 
-## Install
+## Installation
 
-Currently you need to build the binary yourself which you can accomplish with the following steps:
+You can download the latest release from [Releases](https://github.com/bmaynard/kubevol/releases).
 
-```
-git clone git@github.com:bmaynard/kubevol.git
-cd kubevol
-go build
-./kubevol --help
+## Watch And Record Changes
+
+Since Kubernetes doesn't keep track of when a `Secret` or `Configmap` was updated, `kubevol` has a Kubernetes controller that will watch for all changes and will record the last modified date. This then gives `kubevol` the ability to detect if an attached `Secret` or `Configmap` is outdated. 
+
+To install the watch controller, run:
+
+```bash
+$ kubectl apply -f https://raw.githubusercontent.com/bmaynard/kubevol/master/deployment/manifest.yaml
 ```
 
 ### Configuration
@@ -34,14 +37,14 @@ kubeconfig: /path/to/kube/config
 ## Sample Output
 
 ```
-There are 1 pods in the cluster
+$ kubevol secret
+There are 12 pods in the cluster
 Searching for pods that have a Secret attached
 
 +------------------+----------+-----------------------+-----------------------+-------------+
 | NAMESPACE        | POD NAME | SECRET NAME           | VOLUME NAME           | OUT OF DATE |
 +------------------+----------+-----------------------+-----------------------+-------------+
-| kubevol-test-run | redis    | redis-secret          | redis-secret          | Unknown     |
+| kubevol-test-run | redis    | redis-secret          | redis-secret          | No          |
 | kubevol-test-run | redis    | redis-secret-outdated | redis-secret-outdated | Yes         |
-| kubevol-test-run | redis    | default-token-nd4wr   | default-token-nd4wr   | Unknown     |
 +------------------+----------+-----------------------+-----------------------+-------------+
 ```
