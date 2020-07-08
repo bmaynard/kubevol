@@ -1,6 +1,6 @@
 # kubevol
 
-This is an application to audit all your Kubernetes pods for an attached volume or see all the volumes attached to each pod by specific type (eg: ConfigMap, Secret).
+Kubevol allows you to audit all your Kubernetes pods for an attached volume or see all the volumes attached to each pod by a specific type (eg: ConfigMap, Secret).
 
 Features:
 
@@ -16,7 +16,7 @@ You can download the latest release from [Releases](https://github.com/bmaynard/
 
 ## Watch And Record Changes
 
-Since Kubernetes doesn't keep track of when a `Secret` or `Configmap` was updated, `kubevol` has Kubernetes controller that will watch for all changes and will record the last modified date. This then gives `kubevol` the ability to detect if an attached `Secret` or `Configmap` is outdated. 
+Since Kubernetes doesn't keep track of when a `Secret` or `Configmap` was updated, `kubevol` has a Kubernetes controller that will watch for all changes and will record the last modified date. This then gives `kubevol` the ability to detect if an attached `Secret` or `Configmap` is outdated. 
 
 To install the watch controller, run:
 
@@ -44,7 +44,7 @@ Searching for pods that have a Secret attached
 +------------------+----------+-----------------------+-----------------------+-------------+
 | NAMESPACE        | POD NAME | SECRET NAME           | VOLUME NAME           | OUT OF DATE |
 +------------------+----------+-----------------------+-----------------------+-------------+
-| kubevol-test-run | redis    | redis-secret          | redis-secret          | Unknown     |
+| kubevol-test-run | redis    | redis-secret          | redis-secret          | No          |
 | kubevol-test-run | redis    | redis-secret-outdated | redis-secret-outdated | Yes         |
 +------------------+----------+-----------------------+-----------------------+-------------+
 ```
