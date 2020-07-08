@@ -19,6 +19,7 @@ func (w Watch) UpateSecretTracker(old, new interface{}) {
 	defer mutex.Unlock()
 
 	cmTracker, err := w.kubeData.GetConfigMap(WatchSecretTrackerName, WatchNamespace)
+	trackerName := GetConfigMapKey(cm.Namespace, cm.Name)
 
 	now := time.Now()
 	currentTime := fmt.Sprintf("%d", now.Unix())
@@ -29,7 +30,7 @@ func (w Watch) UpateSecretTracker(old, new interface{}) {
 				Name: WatchSecretTrackerName,
 			},
 			Data: map[string]string{
-				cm.Name: currentTime,
+				trackerName: currentTime,
 			},
 		}
 
@@ -46,7 +47,7 @@ func (w Watch) UpateSecretTracker(old, new interface{}) {
 			cmTracker.Data = make(map[string]string)
 		}
 
-		cmTracker.Data[cm.Name] = currentTime
+		cmTracker.Data[trackerName] = currentTime
 		_, err := w.clientset.CoreV1().ConfigMaps(WatchNamespace).Update(cmTracker)
 
 		if err != nil {
@@ -68,13 +69,14 @@ func (w Watch) DeleteSecretTracker(obj interface{}) {
 	defer mutex.Unlock()
 
 	cmTracker, err := w.kubeData.GetConfigMap(WatchSecretTrackerName, WatchNamespace)
+	trackerName := GetConfigMapKey(cm.Namespace, cm.Name)
 
 	if err != nil {
 		w.f.Logger.Info("Unable find tracker configmap")
 		return
 	}
 
-	delete(cmTracker.Data, cm.Name)
+	delete(cmTracker.Data, trackerName)
 	_, dErr := w.clientset.CoreV1().ConfigMaps(WatchNamespace).Update(cmTracker)
 
 	if dErr != nil {

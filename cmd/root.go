@@ -36,9 +36,9 @@ func NewKubevolApp() *cobra.Command {
 
 	kubeData := core.NewKubeData(coreClient)
 
-	rootCmd.AddCommand(NewConfigMapCommand(*kubeData))
-	rootCmd.AddCommand(NewSecretCommand(*kubeData))
-	rootCmd.AddCommand(NewWatchCommand(*factory))
+	rootCmd.AddCommand(NewConfigMapCommand(factory, kubeData))
+	rootCmd.AddCommand(NewSecretCommand(factory, kubeData))
+	rootCmd.AddCommand(NewWatchCommand(factory))
 
 	return rootCmd
 }

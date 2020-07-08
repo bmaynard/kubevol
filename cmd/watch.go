@@ -16,7 +16,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func NewWatchCommand(f core.Factory) *cobra.Command {
+func NewWatchCommand(f *core.Factory) *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "watch",
 		Short: "Watch for updates to ConfigMaps and Secrets",
@@ -30,8 +30,8 @@ func NewWatchCommand(f core.Factory) *cobra.Command {
 			var wg sync.WaitGroup
 			wg.Add(2)
 
-			go watchConfigmap(&wg, &f, clientset)
-			go watchSecret(&wg, &f, clientset)
+			go watchConfigmap(&wg, f, clientset)
+			go watchSecret(&wg, f, clientset)
 			wg.Wait()
 			return nil
 		},

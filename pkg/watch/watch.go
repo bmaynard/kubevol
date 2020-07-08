@@ -1,6 +1,9 @@
 package watch
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
 	"sync"
 
 	"github.com/bmaynard/kubevol/pkg/core"
@@ -34,4 +37,9 @@ func NewWatch(f *core.Factory) *Watch {
 		f:         f,
 		clientset: clientset,
 	}
+}
+
+func GetConfigMapKey(namespace string, name string) string {
+	hash := md5.Sum([]byte(fmt.Sprintf("%s|%s", namespace, name)))
+	return hex.EncodeToString(hash[:])
 }

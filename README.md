@@ -14,6 +14,16 @@ Features:
 
 You can download the latest release from [Releases](https://github.com/bmaynard/kubevol/releases).
 
+## Watch And Record Changes
+
+Since Kubernetes doesn't keep track of when a `Secret` or `Configmap` was updated, `kubevol` has Kubernetes controller that will watch for all changes and will record the last modified date. This then gives `kubevol` the ability to detect if an attached `Secret` or `Configmap` is outdated. 
+
+To install the watch controller, run:
+
+```bash
+$ kubectl apply -f https://raw.githubusercontent.com/bmaynard/kubevol/master/deployment/manifest.yaml
+```
+
 ### Configuration
 
 If your kubeconfig is not in the default location in your home directory, you can specify a custom kubeconfig file by creating the following file:
@@ -27,7 +37,8 @@ kubeconfig: /path/to/kube/config
 ## Sample Output
 
 ```
-There are 1 pods in the cluster
+$ kubevol secret
+There are 12 pods in the cluster
 Searching for pods that have a Secret attached
 
 +------------------+----------+-----------------------+-----------------------+-------------+
@@ -35,6 +46,5 @@ Searching for pods that have a Secret attached
 +------------------+----------+-----------------------+-----------------------+-------------+
 | kubevol-test-run | redis    | redis-secret          | redis-secret          | Unknown     |
 | kubevol-test-run | redis    | redis-secret-outdated | redis-secret-outdated | Yes         |
-| kubevol-test-run | redis    | default-token-nd4wr   | default-token-nd4wr   | Unknown     |
 +------------------+----------+-----------------------+-----------------------+-------------+
 ```
