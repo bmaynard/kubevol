@@ -10,6 +10,4 @@ COPY --from=build-env /src/kubevol /app/
 
 EXPOSE 8080
 
-RUN mkdir -p /app/mocks
-
 CMD ["/app/kubevol", "watch"]
