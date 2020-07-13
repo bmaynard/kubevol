@@ -1,5 +1,7 @@
 # kubevol
 
+![Unit Tests](https://github.com/bmaynard/kubevol/workflows/Unit%20Tests/badge.svg) ![Build](https://github.com/bmaynard/kubevol/workflows/Build/badge.svg) ![Release](https://github.com/bmaynard/kubevol/workflows/Release/badge.svg)
+
 Kubevol allows you to audit all your Kubernetes pods for an attached volume or see all the volumes attached to each pod by a specific type (eg: ConfigMap, Secret).
 
 Features:
