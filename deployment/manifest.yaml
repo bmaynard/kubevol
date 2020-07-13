@@ -74,5 +74,5 @@ spec:
       serviceAccountName: kubevol
       containers:
         - name: kubevol-watch
-          image: "bmaynard/kubevol-watch:v0.5.0"
+          image: "bmaynard/kubevol-watch:v0.6.0"
           imagePullPolicy: IfNotPresent
