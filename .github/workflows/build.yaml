@@ -1,4 +1,4 @@
-name: Build Binary + Unit Tests
+name: Build
 on: [push]
 
 jobs:
@@ -28,20 +28,3 @@ jobs:
         env:
           GOARCH: ${{ matrix.goarch }}
           GOOS: ${{ matrix.goos }}
-  tests:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
-      - uses: engineerd/setup-kind@v0.4.0
-      - name: Testing
-        run: |
-          kubectl cluster-info
-          kubectl get pods -n kube-system
-          echo "current-context:" $(kubectl config current-context)
-          echo "environment-kubeconfig:" ${KUBECONFIG}
-          ./tests/prep-cluster.sh
-
-      - name: Run Tests
-        run: go test -v ./tests
