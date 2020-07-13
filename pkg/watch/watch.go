@@ -95,7 +95,7 @@ func (w Watch) DeleteTracker(trackerConfigmapName string, ns string, nm string) 
 	trackerName := GetConfigMapKey(ns, nm)
 
 	if err != nil {
-		w.f.Logger.Info("Unable find tracker configmap: \"%s\"", trackerConfigmapName)
+		w.f.Logger.Infof("Unable find tracker configmap: \"%s\"", trackerConfigmapName)
 		return
 	}
 
