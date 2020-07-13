@@ -30,7 +30,7 @@ func NewSecretCommand(f *core.Factory, k *core.KubeData) *cobra.Command {
 			secretTracker, secretTrackerErr := k.GetConfigMap(watch.WatchSecretTrackerName, watch.WatchNamespace)
 
 			if secretTrackerErr != nil {
-				f.Logger.Error(secretTrackerErr)
+				f.Logger.Warn(secretTrackerErr)
 			}
 
 			for _, pod := range pods.Items {
