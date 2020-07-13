@@ -36,12 +36,6 @@ func NewSecretCommand(f *core.Factory, k *core.KubeData) *cobra.Command {
 			for _, pod := range pods.Items {
 				podName := pod.ObjectMeta.Name
 				namespace := pod.ObjectMeta.Namespace
-				_, err := k.GetPod(podName, namespace)
-
-				if err != nil {
-					f.Logger.Error(err)
-					continue
-				}
 
 				for _, volume := range pod.Spec.Volumes {
 					if volume.Secret != nil {
