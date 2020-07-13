@@ -2,10 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"strconv"
-	"time"
 
 	"github.com/bmaynard/kubevol/pkg/core"
+	"github.com/bmaynard/kubevol/pkg/utils"
 	"github.com/bmaynard/kubevol/pkg/watch"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -28,10 +27,10 @@ func NewConfigMapCommand(f *core.Factory, k *core.KubeData) *cobra.Command {
 			}
 
 			ui := core.SetupTable(table.Row{"Namespace", "Pod Name", "ConfigMap Name", "Volume Name", "Out of Date"}, cmd.OutOrStdout())
-			configmapTracker, err := k.GetConfigMap(watch.WatchConfigMapTrackerName, watch.WatchNamespace)
+			configmapTracker, configmapTrackerErr := k.GetConfigMap(watch.WatchConfigMapTrackerName, watch.WatchNamespace)
 
-			if err != nil {
-				f.Logger.Error(err)
+			if configmapTrackerErr != nil {
+				f.Logger.Warn(configmapTrackerErr)
 			}
 
 			for _, pod := range pods.Items {
@@ -41,35 +40,25 @@ func NewConfigMapCommand(f *core.Factory, k *core.KubeData) *cobra.Command {
 
 				if err != nil {
 					f.Logger.Error(err)
+					continue
 				}
-
-				podCreationTime := pod.ObjectMeta.CreationTimestamp.Time
 
 				for _, volume := range pod.Spec.Volumes {
 					if volume.ConfigMap != nil {
 						if objectName == "" || (volume.ConfigMap != nil && volume.ConfigMap.LocalObjectReference.Name == objectName) {
 							configMap, err := k.GetConfigMap(volume.ConfigMap.LocalObjectReference.Name, namespace)
 							trackerName := watch.GetConfigMapKey(namespace, volume.ConfigMap.LocalObjectReference.Name)
-							var outOfDate string
 
-							if configmapTracker.CreationTimestamp.Time.Before(configMap.ObjectMeta.CreationTimestamp.Time) {
-								outOfDate = color.GreenString("No")
-							} else {
-								outOfDate = color.YellowString("Unknown")
+							o := utils.OutOfDateObject{
+								ObjectTime:  configMap.ObjectMeta.CreationTimestamp.Time,
+								PodTime:     pod.ObjectMeta.CreationTimestamp.Time,
+								ObjectErr:   err,
+								Tracker:     configmapTracker,
+								TrackerErr:  configmapTrackerErr,
+								TrackerName: trackerName,
 							}
 
-							if err != nil || configMap.ObjectMeta.CreationTimestamp.Time.After(podCreationTime) {
-								outOfDate = color.RedString("Yes")
-							}
-
-							if updatedTime, ok := configmapTracker.Data[trackerName]; ok {
-								parsedTime, err := strconv.ParseInt(updatedTime, 10, 64)
-								if err == nil && configMap.ObjectMeta.CreationTimestamp.Time.Before(time.Unix(parsedTime, 0)) {
-									outOfDate = color.RedString("Yes")
-								} else {
-									outOfDate = color.RedString("No")
-								}
-							}
+							outOfDate := utils.GetOutOfDateText(o)
 
 							ui.AppendRow([]table.Row{
 								{color.BlueString(namespace), podName, volume.ConfigMap.LocalObjectReference.Name, volume.Name, outOfDate},
