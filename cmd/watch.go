@@ -59,6 +59,7 @@ func watchConfigmap(wg *sync.WaitGroup, f *core.Factory, clientset kubernetes.In
 	watcher := w.NewWatch(f)
 
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
+		AddFunc:    watcher.AddConfigMapTracker,
 		UpdateFunc: watcher.UpateConfigMapTracker,
 		DeleteFunc: watcher.DeleteConfigMapTracker,
 	})
@@ -87,6 +88,7 @@ func watchSecret(wg *sync.WaitGroup, f *core.Factory, clientset kubernetes.Inter
 	watcher := w.NewWatch(f)
 
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
+		AddFunc:    watcher.AddSecretTracker,
 		UpdateFunc: watcher.UpateSecretTracker,
 		DeleteFunc: watcher.DeleteSecretTracker,
 	})
