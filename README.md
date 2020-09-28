@@ -23,7 +23,7 @@ Since Kubernetes doesn't keep track of when a `Secret` or `Configmap` was update
 To install the watch controller, run:
 
 ```bash
-$ kubectl apply -f https://raw.githubusercontent.com/bmaynard/kubevol/master/deployment/manifest.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/bmaynard/kubevol/main/deployment/manifest.yaml
 ```
 
 ### Configuration
